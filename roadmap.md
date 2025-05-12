@@ -51,20 +51,20 @@ This roadmap outlines the phases, tools, and Laravel packages that will be used 
 
 ## 📋 Phase 5: BAC Evaluation and Supplier Canvassing
 
-- [ ] Create interfaces for BAC members to evaluate specs
-- [ ] Build RFQ generation feature
-- [ ] Link supplier database to RFQ items
+- [x] Create interfaces for BAC members to evaluate specs
+- [x] Build RFQ generation feature
+- [x] Link supplier database to RFQ items
 
 **Packages:**
 - [ ] `maatwebsite/excel` – for exporting/importing supplier data and quotations
-- [ ] `dompdf/dompdf` or `barryvdh/laravel-dompdf` – to generate printable RFQs and AOQs
+- [x] `dompdf/dompdf` or `barryvdh/laravel-dompdf` – to generate printable RFQs and AOQs
 
 ---
 
 ## 🛍️ Phase 6: Document Generation (AOQ, PO, DV)
 
-- [ ] Automate generation of Abstracts of Quotation, Purchase Orders, Disbursement Vouchers
-- [ ] Implement print/export buttons for each document
+- [x] Automate generation of Abstracts of Quotation, Purchase Orders, Disbursement Vouchers
+- [x] Implement print/export buttons for each document
 
 ---
 

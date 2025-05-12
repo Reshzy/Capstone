@@ -7,6 +7,9 @@ use App\Http\Controllers\BudgetApprovalController;
 use App\Http\Controllers\RequestForQuotationController;
 use App\Http\Controllers\SupplierQuotationController;
 use App\Http\Controllers\AbstractOfQuotationController;
+use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\DisbursementVoucherController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -110,6 +113,31 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:procurement_officer|admin')->group(function () {
         Route::resource('abstract-of-quotations', AbstractOfQuotationController::class);
         Route::post('abstract-of-quotations/{abstractOfQuotation}/approve', [AbstractOfQuotationController::class, 'approve'])->name('abstract-of-quotations.approve');
+    });
+    
+    // Purchase Order Routes
+    Route::middleware('role:procurement_officer|admin')->group(function () {
+        Route::resource('purchase-orders', PurchaseOrderController::class);
+        Route::get('purchase-orders/create/{abstractOfQuotation}', [PurchaseOrderController::class, 'create'])->name('purchase-orders.create');
+        Route::post('purchase-orders/{purchaseOrder}/approve', [PurchaseOrderController::class, 'approve'])->name('purchase-orders.approve');
+        Route::post('purchase-orders/{purchaseOrder}/deliver', [PurchaseOrderController::class, 'markDelivered'])->name('purchase-orders.deliver');
+    });
+    
+    // Disbursement Voucher Routes
+    Route::middleware('role:approver|admin')->group(function () {
+        Route::resource('disbursement-vouchers', DisbursementVoucherController::class);
+        Route::get('disbursement-vouchers/create/{purchaseOrder}', [DisbursementVoucherController::class, 'create'])->name('disbursement-vouchers.create');
+        Route::post('disbursement-vouchers/{disbursementVoucher}/approve', [DisbursementVoucherController::class, 'approve'])->name('disbursement-vouchers.approve');
+        Route::post('disbursement-vouchers/{disbursementVoucher}/pay', [DisbursementVoucherController::class, 'markPaid'])->name('disbursement-vouchers.pay');
+    });
+    
+    // Document Generation Routes
+    Route::middleware('role:procurement_officer|admin')->group(function () {
+        // PDF generation routes
+        Route::get('documents/rfq/{rfq}', [DocumentController::class, 'generateRFQ'])->name('documents.rfq');
+        Route::get('documents/aoq/{aoq}', [DocumentController::class, 'generateAOQ'])->name('documents.aoq');
+        Route::get('documents/po/{po}', [DocumentController::class, 'generatePO'])->name('documents.po');
+        Route::get('documents/dv/{disbursementVoucher}', [DocumentController::class, 'generateDV'])->name('documents.dv');
     });
 });
 
