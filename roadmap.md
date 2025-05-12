@@ -102,12 +102,12 @@ This roadmap outlines the phases, tools, and Laravel packages that will be used 
 
 ## 🔍 Phase 10: Testing and Security
 
-- [ ] Write unit tests for models and controllers
+- [x] Write unit tests for models and controllers
 - [x] Test form validation, file uploads, and access control
-- [ ] Conduct penetration testing and ensure HTTPS is enabled
+- [x] Conduct penetration testing and ensure HTTPS is enabled
 
 **Packages:**
-- [ ] `phpunit/phpunit` – built-in Laravel testing
+- [x] `phpunit/phpunit` – built-in Laravel testing
 - [x] `fzaninotto/faker` – for seeding mock data
 
 ---
