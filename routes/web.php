@@ -13,6 +13,7 @@ use App\Http\Controllers\DisbursementVoucherController;
 use App\Http\Controllers\ProcurementCategoryController;
 use App\Http\Controllers\SupplierPerformanceController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -168,6 +169,11 @@ Route::middleware('auth')->group(function () {
         // Activity Log
         Route::get('reports/activity-log', [ReportController::class, 'activityLog'])->name('reports.activity-log');
     });
+    
+    // Notification Routes
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{notification}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
 });
 
 require __DIR__.'/auth.php';

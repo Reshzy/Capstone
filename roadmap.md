@@ -91,12 +91,12 @@ This roadmap outlines the phases, tools, and Laravel packages that will be used 
 
 ## 🔔 Phase 9: Notification System
 
-- [ ] Implement email notifications for key actions (PR submitted, approved, rejected)
-- [ ] Add in-app notifications using Laravel Broadcast or Pusher (optional)
+- [x] Implement email notifications for key actions (PR submitted, approved, rejected)
+- [x] Add in-app notifications using Laravel Broadcast or Pusher (optional)
 
 **Packages:**
-- [ ] `laravel-notification-channels/webpush` – for real-time in-app notifications
-- [ ] `pusher/pusher-php-server` – for event broadcasting (optional)
+- [x] `laravel-notification-channels/webpush` – for real-time in-app notifications
+- [x] `pusher/pusher-php-server` – for event broadcasting (optional)
 
 ---
 

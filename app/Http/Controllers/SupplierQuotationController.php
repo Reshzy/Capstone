@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Notifications\QuotationReceived;
+use App\Models\User;
 
 class SupplierQuotationController extends Controller
 {
@@ -27,7 +29,21 @@ class SupplierQuotationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Existing validation and creation code...
+        
+        // After creating the quotation, send notifications
+        $procurementOfficers = User::role('procurement_officer')->get();
+        foreach ($procurementOfficers as $officer) {
+            $officer->notify(new QuotationReceived($supplierQuotation));
+        }
+        
+        // Notify admin users as well
+        $admins = User::role('admin')->get();
+        foreach ($admins as $admin) {
+            $admin->notify(new QuotationReceived($supplierQuotation));
+        }
+        
+        // Existing return/redirect code...
     }
 
     /**

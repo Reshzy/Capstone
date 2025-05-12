@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use App\Notifications\PurchaseRequestSubmitted;
+use App\Notifications\PurchaseRequestApproved;
+use App\Notifications\PurchaseRequestRejected;
+use App\Models\User;
 
 class PurchaseRequestController extends Controller
 {
@@ -230,11 +234,21 @@ class PurchaseRequestController extends Controller
         $purchaseRequest->status = 'submitted';
         $purchaseRequest->save();
         
-        // TODO: Send notification to approvers
+        // Notify approvers about the new purchase request
+        $approvers = User::role('approver')->get();
+        foreach ($approvers as $approver) {
+            $approver->notify(new PurchaseRequestSubmitted($purchaseRequest));
+        }
+        
+        // Notify admin users as well
+        $admins = User::role('admin')->get();
+        foreach ($admins as $admin) {
+            $admin->notify(new PurchaseRequestSubmitted($purchaseRequest));
+        }
         
         return redirect()
             ->route('purchase-requests.show', $purchaseRequest)
-            ->with('success', 'Purchase request submitted successfully and is pending approval.');
+            ->with('success', 'Purchase request submitted successfully.');
     }
     
     /**
@@ -247,7 +261,21 @@ class PurchaseRequestController extends Controller
                 ->with('error', 'Only submitted purchase requests can be approved or rejected.');
         }
 
-        // Redirect to the new budget approval workflow
-        return redirect()->route('budget-approvals.create', $purchaseRequest);
+        if ($request->action === 'approve') {
+            $purchaseRequest->status = 'approved';
+            $purchaseRequest->save();
+            
+            // Send notification to the requestor
+            $purchaseRequest->user->notify(new PurchaseRequestApproved($purchaseRequest));
+        } else {
+            $purchaseRequest->status = 'rejected';
+            $purchaseRequest->save();
+            
+            // Send notification to the requestor
+            $purchaseRequest->user->notify(new PurchaseRequestRejected($purchaseRequest));
+        }
+        
+        return redirect()->route('purchase-requests.show', $purchaseRequest)
+            ->with('success', 'Purchase request processed successfully.');
     }
 }
