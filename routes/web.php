@@ -4,6 +4,9 @@ use App\Http\Controllers\PurchaseRequestController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BudgetApprovalController;
+use App\Http\Controllers\RequestForQuotationController;
+use App\Http\Controllers\SupplierQuotationController;
+use App\Http\Controllers\AbstractOfQuotationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -82,6 +85,31 @@ Route::middleware('auth')->group(function () {
     // Supplier Routes - Only accessible to procurement officers and admins
     Route::middleware('role:procurement_officer|admin')->group(function () {
         Route::resource('suppliers', SupplierController::class);
+    });
+    
+    // RFQ Routes - Only accessible to procurement officers and admins
+    Route::middleware('role:procurement_officer|admin')->group(function () {
+        Route::get('rfq', [RequestForQuotationController::class, 'index'])->name('rfq.index');
+        Route::get('rfq/create', [RequestForQuotationController::class, 'create'])->name('rfq.create');
+        Route::post('rfq', [RequestForQuotationController::class, 'store'])->name('rfq.store');
+        Route::get('rfq/{rfq}', [RequestForQuotationController::class, 'show'])->name('rfq.show');
+        Route::get('rfq/{rfq}/edit', [RequestForQuotationController::class, 'edit'])->name('rfq.edit');
+        Route::put('rfq/{rfq}', [RequestForQuotationController::class, 'update'])->name('rfq.update');
+        Route::delete('rfq/{rfq}', [RequestForQuotationController::class, 'destroy'])->name('rfq.destroy');
+        Route::post('rfq/{rfq}/publish', [RequestForQuotationController::class, 'publish'])->name('rfq.publish');
+        Route::post('rfq/{rfq}/close', [RequestForQuotationController::class, 'close'])->name('rfq.close');
+    });
+    
+    // Supplier Quotation Routes
+    Route::middleware('role:procurement_officer|admin')->group(function () {
+        Route::resource('supplier-quotations', SupplierQuotationController::class);
+        Route::post('supplier-quotations/{supplierQuotation}/award', [SupplierQuotationController::class, 'award'])->name('supplier-quotations.award');
+    });
+    
+    // Abstract of Quotation Routes
+    Route::middleware('role:procurement_officer|admin')->group(function () {
+        Route::resource('abstract-of-quotations', AbstractOfQuotationController::class);
+        Route::post('abstract-of-quotations/{abstractOfQuotation}/approve', [AbstractOfQuotationController::class, 'approve'])->name('abstract-of-quotations.approve');
     });
 });
 

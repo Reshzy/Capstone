@@ -48,6 +48,14 @@ class PurchaseRequest extends Model
         return $this->hasOne(BudgetApproval::class);
     }
     
+    /**
+     * Get the request for quotation associated with this purchase request.
+     */
+    public function requestForQuotation(): HasOne
+    {
+        return $this->hasOne(RequestForQuotation::class);
+    }
+    
     public static function generatePRNumber(): string
     {
         $year = date('Y');

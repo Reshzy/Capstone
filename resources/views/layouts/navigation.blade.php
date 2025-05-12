@@ -37,6 +37,12 @@
                         {{ __('Suppliers') }}
                     </x-nav-link>
                 </div>
+                
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('rfq.index')" :active="request()->routeIs('rfq.*')">
+                        {{ __('RFQs') }}
+                    </x-nav-link>
+                </div>
                 @endif
                 
                 @if(Auth::user()->hasRole('admin'))
@@ -114,6 +120,10 @@
             @if(Auth::user()->hasRole('admin') || Auth::user()->hasRole('procurement_officer'))
             <x-responsive-nav-link :href="route('suppliers.index')" :active="request()->routeIs('suppliers.*')">
                 {{ __('Suppliers') }}
+            </x-responsive-nav-link>
+            
+            <x-responsive-nav-link :href="route('rfq.index')" :active="request()->routeIs('rfq.*')">
+                {{ __('RFQs') }}
             </x-responsive-nav-link>
             @endif
             
