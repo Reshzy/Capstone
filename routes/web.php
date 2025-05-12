@@ -10,6 +10,8 @@ use App\Http\Controllers\AbstractOfQuotationController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\DisbursementVoucherController;
+use App\Http\Controllers\ProcurementCategoryController;
+use App\Http\Controllers\SupplierPerformanceController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -88,6 +90,20 @@ Route::middleware('auth')->group(function () {
     // Supplier Routes - Only accessible to procurement officers and admins
     Route::middleware('role:procurement_officer|admin')->group(function () {
         Route::resource('suppliers', SupplierController::class);
+        Route::post('suppliers/{supplier}/toggle-status', [SupplierController::class, 'toggleStatus'])
+            ->name('suppliers.toggle-status');
+            
+        // Procurement Category Routes
+        Route::resource('procurement-categories', ProcurementCategoryController::class);
+        
+        // Supplier Performance Routes
+        Route::resource('supplier-performances', SupplierPerformanceController::class);
+        Route::get('suppliers/{supplier}/performances', [SupplierPerformanceController::class, 'index'])
+            ->name('suppliers.performances');
+        Route::get('suppliers/{supplier}/performances/create', [SupplierPerformanceController::class, 'create'])
+            ->name('suppliers.performances.create');
+        Route::get('suppliers/{supplier}/performance-summary', [SupplierPerformanceController::class, 'summary'])
+            ->name('suppliers.performance-summary');
     });
     
     // RFQ Routes - Only accessible to procurement officers and admins

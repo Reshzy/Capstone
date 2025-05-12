@@ -71,8 +71,8 @@ This roadmap outlines the phases, tools, and Laravel packages that will be used 
 ## 📦 Phase 7: Supplier Management Module
 
 - [x] Add/edit/delete supplier entries
-- [ ] Tag suppliers by procurement category
-- [ ] Track supplier performance history
+- [x] Tag suppliers by procurement category
+- [x] Track supplier performance history
 
 ---
 
