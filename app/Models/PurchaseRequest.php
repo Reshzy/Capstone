@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class PurchaseRequest extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
     
     protected $fillable = [
         'user_id',
@@ -68,5 +70,17 @@ class PurchaseRequest extends Model
         $sequence = $lastRecord ? intval(substr($lastRecord->pr_number, -4)) + 1 : 1;
         
         return "PR-{$year}{$month}-" . str_pad($sequence, 4, '0', STR_PAD_LEFT);
+    }
+    
+    /**
+     * Get the options for logging activity.
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['status', 'estimated_amount', 'approver_id', 'rejection_reason'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->setDescriptionForEvent(fn(string $eventName) => "Purchase request {$this->pr_number} has been {$eventName}");
     }
 }

@@ -12,6 +12,7 @@ use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\DisbursementVoucherController;
 use App\Http\Controllers\ProcurementCategoryController;
 use App\Http\Controllers\SupplierPerformanceController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -154,6 +155,18 @@ Route::middleware('auth')->group(function () {
         Route::get('documents/aoq/{aoq}', [DocumentController::class, 'generateAOQ'])->name('documents.aoq');
         Route::get('documents/po/{po}', [DocumentController::class, 'generatePO'])->name('documents.po');
         Route::get('documents/dv/{disbursementVoucher}', [DocumentController::class, 'generateDV'])->name('documents.dv');
+    });
+    
+    // Reporting Routes - Only accessible to admin and procurement officers
+    Route::middleware('role:admin|procurement_officer')->group(function () {
+        Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('reports/purchase-requests', [ReportController::class, 'purchaseRequests'])->name('reports.purchase-requests');
+        Route::get('reports/budget-approvals', [ReportController::class, 'budgetApprovals'])->name('reports.budget-approvals');
+        Route::get('reports/suppliers', [ReportController::class, 'suppliers'])->name('reports.suppliers');
+        Route::post('reports/generate-pdf', [ReportController::class, 'generatePdf'])->name('reports.generate-pdf');
+        
+        // Activity Log
+        Route::get('reports/activity-log', [ReportController::class, 'activityLog'])->name('reports.activity-log');
     });
 });
 

@@ -80,12 +80,12 @@ This roadmap outlines the phases, tools, and Laravel packages that will be used 
 
 - [x] Create dashboards for all user roles
 - [x] Add tables for tracking pending, approved, and rejected PRs
-- [ ] Build reporting feature with filters by date, department, category
+- [x] Build reporting feature with filters by date, department, category
 
 **Packages:**
-- [ ] `yajra/laravel-datatables` – for searchable, paginated data tables
-- [ ] `spatie/laravel-activitylog` – for audit trail logging
-- [ ] `barryvdh/laravel-dompdf` – for report PDF export
+- [x] `yajra/laravel-datatables` – for searchable, paginated data tables
+- [x] `spatie/laravel-activitylog` – for audit trail logging
+- [x] `barryvdh/laravel-dompdf` – for report PDF export
 
 ---
 
