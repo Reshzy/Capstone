@@ -16,8 +16,7 @@ class BudgetApprovalController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
-        $this->middleware('role:approver|admin');
+        // Handle middleware in routes instead
     }
     
     /**

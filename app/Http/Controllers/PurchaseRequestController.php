@@ -18,12 +18,15 @@ class PurchaseRequestController extends Controller
      */
     public function __construct()
     {
+        // Apply auth middleware to all methods
         $this->middleware('auth');
-        $this->middleware('permission:view purchase requests')->only(['index', 'show']);
-        $this->middleware('permission:create purchase requests')->only(['create', 'store']);
-        $this->middleware('permission:edit purchase requests')->only(['edit', 'update']);
-        $this->middleware('permission:delete purchase requests')->only('destroy');
-        $this->middleware('permission:approve purchase requests|reject purchase requests')->only('processApproval');
+        
+        // Apply permission-based middleware to specific methods
+        $this->middleware('can:view purchase requests', ['only' => ['index', 'show']]);
+        $this->middleware('can:create purchase requests', ['only' => ['create', 'store']]);
+        $this->middleware('can:edit purchase requests', ['only' => ['edit', 'update']]);
+        $this->middleware('can:delete purchase requests', ['only' => ['destroy']]);
+        $this->middleware('can:approve purchase requests', ['only' => ['processApproval']]);
     }
     
     /**
@@ -31,9 +34,9 @@ class PurchaseRequestController extends Controller
      */
     public function index()
     {
-        if (Auth::user()->hasRole('admin') || Auth::user()->hasRole('procurement_officer')) {
+        if (auth()->user()->hasAnyRole(['admin', 'procurement_officer'])) {
             $purchaseRequests = PurchaseRequest::with('user', 'approver')->latest()->paginate(10);
-        } elseif (Auth::user()->hasRole('approver')) {
+        } elseif (auth()->user()->hasRole('approver')) {
             $purchaseRequests = PurchaseRequest::with('user')
                 ->where('status', 'submitted')
                 ->latest()
@@ -104,13 +107,13 @@ class PurchaseRequestController extends Controller
      */
     public function edit(PurchaseRequest $purchaseRequest)
     {
-        if (Auth::id() !== $purchaseRequest->user_id && !Auth::user()->hasRole(['admin', 'procurement_officer'])) {
+        if (Auth::id() !== $purchaseRequest->user_id && !auth()->user()->hasAnyRole(['admin', 'procurement_officer'])) {
             return redirect()
                 ->route('purchase-requests.index')
                 ->with('error', 'You are not authorized to edit this purchase request.');
         }
         
-        if ($purchaseRequest->status !== 'draft' && !Auth::user()->hasRole(['admin', 'procurement_officer'])) {
+        if ($purchaseRequest->status !== 'draft' && !auth()->user()->hasAnyRole(['admin', 'procurement_officer'])) {
             return redirect()
                 ->route('purchase-requests.show', $purchaseRequest)
                 ->with('error', 'You cannot edit a purchase request that has been submitted.');
@@ -124,13 +127,13 @@ class PurchaseRequestController extends Controller
      */
     public function update(Request $request, PurchaseRequest $purchaseRequest)
     {
-        if (Auth::id() !== $purchaseRequest->user_id && !Auth::user()->hasRole(['admin', 'procurement_officer'])) {
+        if (Auth::id() !== $purchaseRequest->user_id && !auth()->user()->hasAnyRole(['admin', 'procurement_officer'])) {
             return redirect()
                 ->route('purchase-requests.index')
                 ->with('error', 'You are not authorized to update this purchase request.');
         }
         
-        if ($purchaseRequest->status !== 'draft' && !Auth::user()->hasRole(['admin', 'procurement_officer'])) {
+        if ($purchaseRequest->status !== 'draft' && !auth()->user()->hasAnyRole(['admin', 'procurement_officer'])) {
             return redirect()
                 ->route('purchase-requests.show', $purchaseRequest)
                 ->with('error', 'You cannot update a purchase request that has been submitted.');
@@ -172,7 +175,7 @@ class PurchaseRequestController extends Controller
      */
     public function destroy(PurchaseRequest $purchaseRequest)
     {
-        if (Auth::id() !== $purchaseRequest->user_id && !Auth::user()->hasRole('admin')) {
+        if (Auth::id() !== $purchaseRequest->user_id && !auth()->user()->hasRole('admin')) {
             return redirect()
                 ->route('purchase-requests.index')
                 ->with('error', 'You are not authorized to delete this purchase request.');
@@ -201,7 +204,7 @@ class PurchaseRequestController extends Controller
      */
     public function submit(PurchaseRequest $purchaseRequest)
     {
-        if (Auth::id() !== $purchaseRequest->user_id && !Auth::user()->hasRole('admin')) {
+        if (Auth::id() !== $purchaseRequest->user_id && !auth()->user()->hasRole('admin')) {
             return redirect()
                 ->route('purchase-requests.index')
                 ->with('error', 'You are not authorized to submit this purchase request.');
