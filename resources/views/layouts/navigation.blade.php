@@ -23,6 +23,14 @@
                     </x-nav-link>
                 </div>
                 
+                @if(Auth::user()->hasRole('approver') || Auth::user()->hasRole('admin'))
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('budget-approvals.index')" :active="request()->routeIs('budget-approvals.*')">
+                        {{ __('Budget Approvals') }}
+                    </x-nav-link>
+                </div>
+                @endif
+                
                 @if(Auth::user()->hasRole('admin') || Auth::user()->hasRole('procurement_officer'))
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('suppliers.index')" :active="request()->routeIs('suppliers.*')">
@@ -88,6 +96,12 @@
             <x-responsive-nav-link :href="route('purchase-requests.index')" :active="request()->routeIs('purchase-requests.*')">
                 {{ __('Purchase Requests') }}
             </x-responsive-nav-link>
+            
+            @if(Auth::user()->hasRole('approver') || Auth::user()->hasRole('admin'))
+            <x-responsive-nav-link :href="route('budget-approvals.index')" :active="request()->routeIs('budget-approvals.*')">
+                {{ __('Budget Approvals') }}
+            </x-responsive-nav-link>
+            @endif
             
             @if(Auth::user()->hasRole('admin') || Auth::user()->hasRole('procurement_officer'))
             <x-responsive-nav-link :href="route('suppliers.index')" :active="request()->routeIs('suppliers.*')">

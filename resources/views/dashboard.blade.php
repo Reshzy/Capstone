@@ -42,19 +42,19 @@
                         <div class="bg-white p-4 rounded-lg shadow border-l-4 border-blue-500">
                             <h3 class="text-lg font-semibold text-gray-700">Pending Approval</h3>
                             <p class="text-3xl font-bold text-blue-600">{{ App\Models\PurchaseRequest::where('status', 'submitted')->count() }}</p>
-                            <a href="{{ route('purchase-requests.index') }}" class="text-blue-500 hover:text-blue-700 text-sm">View all</a>
+                            <a href="{{ route('budget-approvals.index') }}" class="text-blue-500 hover:text-blue-700 text-sm">View all</a>
                         </div>
                         
                         <div class="bg-white p-4 rounded-lg shadow border-l-4 border-green-500">
                             <h3 class="text-lg font-semibold text-gray-700">Approved by Me</h3>
-                            <p class="text-3xl font-bold text-green-600">{{ App\Models\PurchaseRequest::where('approver_id', Auth::id())->where('status', 'approved')->count() }}</p>
-                            <a href="{{ route('purchase-requests.index') }}" class="text-green-500 hover:text-green-700 text-sm">View all</a>
+                            <p class="text-3xl font-bold text-green-600">{{ App\Models\BudgetApproval::where('approver_id', Auth::id())->where('status', 'approved')->count() }}</p>
+                            <a href="{{ route('budget-approvals.index') }}" class="text-green-500 hover:text-green-700 text-sm">View all</a>
                         </div>
                         
                         <div class="bg-white p-4 rounded-lg shadow border-l-4 border-red-500">
                             <h3 class="text-lg font-semibold text-gray-700">Rejected by Me</h3>
                             <p class="text-3xl font-bold text-red-600">{{ App\Models\PurchaseRequest::where('approver_id', Auth::id())->where('status', 'rejected')->count() }}</p>
-                            <a href="{{ route('purchase-requests.index') }}" class="text-red-500 hover:text-red-700 text-sm">View all</a>
+                            <a href="{{ route('budget-approvals.index') }}" class="text-red-500 hover:text-red-700 text-sm">View all</a>
                         </div>
                         @endif
                         

@@ -105,6 +105,56 @@
                     </div>
                     @endif
                     
+                    @if($purchaseRequest->status === 'approved' && $purchaseRequest->budgetApproval)
+                    <div class="mb-6">
+                        <h4 class="text-sm font-medium text-green-500 mb-2">Budget Approval Details</h4>
+                        <div class="bg-green-50 p-4 rounded border-l-4 border-green-500">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-500">Approval Number</p>
+                                    <p>{{ $purchaseRequest->budgetApproval->approval_number }}</p>
+                                </div>
+                                
+                                <div>
+                                    <p class="text-sm font-medium text-gray-500">Approved Amount</p>
+                                    <p class="font-semibold">₱{{ number_format($purchaseRequest->budgetApproval->approved_amount, 2) }}</p>
+                                </div>
+                                
+                                <div>
+                                    <p class="text-sm font-medium text-gray-500">Approved By</p>
+                                    <p>{{ $purchaseRequest->budgetApproval->approver->name }}</p>
+                                </div>
+                                
+                                <div>
+                                    <p class="text-sm font-medium text-gray-500">Approved On</p>
+                                    <p>{{ $purchaseRequest->budgetApproval->approved_at->format('F d, Y') }}</p>
+                                </div>
+                                
+                                @if($purchaseRequest->budgetApproval->fund_source)
+                                <div>
+                                    <p class="text-sm font-medium text-gray-500">Fund Source</p>
+                                    <p>{{ $purchaseRequest->budgetApproval->fund_source }}</p>
+                                </div>
+                                @endif
+                                
+                                @if($purchaseRequest->budgetApproval->budget_code)
+                                <div>
+                                    <p class="text-sm font-medium text-gray-500">Budget Code</p>
+                                    <p>{{ $purchaseRequest->budgetApproval->budget_code }}</p>
+                                </div>
+                                @endif
+                            </div>
+                            
+                            @if($purchaseRequest->budgetApproval->notes)
+                            <div class="mt-4 pt-4 border-t border-green-200">
+                                <p class="text-sm font-medium text-gray-500">Notes</p>
+                                <p class="whitespace-pre-line">{{ $purchaseRequest->budgetApproval->notes }}</p>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                    @endif
+                    
                     <!-- Action Buttons -->
                     <div class="flex justify-between items-center border-t pt-4 mt-6">
                         <div>
@@ -130,17 +180,9 @@
                             @endif
                             
                             @if($purchaseRequest->status === 'submitted' && auth()->user()->can('approve purchase requests'))
-                                <form action="{{ route('purchase-requests.process-approval', $purchaseRequest) }}" method="POST" class="inline-block">
-                                    @csrf
-                                    <input type="hidden" name="action" value="approve">
-                                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-500 focus:bg-green-500 active:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150" onclick="return confirm('Are you sure you want to approve this purchase request?')">
-                                        Approve
-                                    </button>
-                                </form>
-                                
-                                <button type="button" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 focus:bg-red-500 active:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150" onclick="document.getElementById('rejection-modal').classList.remove('hidden')">
-                                    Reject
-                                </button>
+                                <a href="{{ route('budget-approvals.create', $purchaseRequest) }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-500 focus:bg-indigo-500 active:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                    Review for Budget Approval
+                                </a>
                             @endif
                             
                             @if($purchaseRequest->status === 'draft' && (auth()->id() === $purchaseRequest->user_id || auth()->user()->can('delete purchase requests')))
@@ -154,33 +196,6 @@
                             @endif
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Rejection Modal -->
-    <div id="rejection-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div class="mt-3 text-center">
-                <h3 class="text-lg leading-6 font-medium text-gray-900">Reject Purchase Request</h3>
-                <div class="mt-2 px-7 py-3">
-                    <form action="{{ route('purchase-requests.process-approval', $purchaseRequest) }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="action" value="reject">
-                        <div class="mb-4">
-                            <label for="rejection_reason" class="block text-left text-sm font-medium text-gray-700 mb-2">Reason for Rejection</label>
-                            <textarea id="rejection_reason" name="rejection_reason" rows="4" class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required></textarea>
-                        </div>
-                        <div class="flex justify-end space-x-3">
-                            <button type="button" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150" onclick="document.getElementById('rejection-modal').classList.add('hidden')">
-                                Cancel
-                            </button>
-                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 focus:bg-red-500 active:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                Confirm Rejection
-                            </button>
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>

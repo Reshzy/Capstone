@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class PurchaseRequest extends Model
 {
@@ -37,6 +38,14 @@ class PurchaseRequest extends Model
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approver_id');
+    }
+    
+    /**
+     * Get the budget approval for this purchase request.
+     */
+    public function budgetApproval(): HasOne
+    {
+        return $this->hasOne(BudgetApproval::class);
     }
     
     public static function generatePRNumber(): string

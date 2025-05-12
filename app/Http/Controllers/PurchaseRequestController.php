@@ -95,7 +95,7 @@ class PurchaseRequestController extends Controller
      */
     public function show(PurchaseRequest $purchaseRequest)
     {
-        $purchaseRequest->load('user', 'approver');
+        $purchaseRequest->load(['user', 'approver', 'budgetApproval', 'budgetApproval.approver']);
         return view('purchase-requests.show', compact('purchaseRequest'));
     }
 
@@ -224,46 +224,16 @@ class PurchaseRequestController extends Controller
     }
     
     /**
-     * Process the approval or rejection of a purchase request.
+     * Process approval or rejection of a purchase request.
      */
     public function processApproval(Request $request, PurchaseRequest $purchaseRequest)
     {
-        if (!Auth::user()->hasPermissionTo('approve purchase requests') && 
-            !Auth::user()->hasPermissionTo('reject purchase requests')) {
-            return redirect()
-                ->route('purchase-requests.index')
-                ->with('error', 'You are not authorized to approve or reject purchase requests.');
-        }
-        
         if ($purchaseRequest->status !== 'submitted') {
-            return redirect()
-                ->route('purchase-requests.show', $purchaseRequest)
-                ->with('error', 'This purchase request is not pending approval.');
+            return redirect()->route('purchase-requests.show', $purchaseRequest)
+                ->with('error', 'Only submitted purchase requests can be approved or rejected.');
         }
-        
-        $validatedData = $request->validate([
-            'action' => 'required|in:approve,reject',
-            'rejection_reason' => 'required_if:action,reject|nullable|string',
-        ]);
-        
-        $purchaseRequest->approver_id = Auth::id();
-        
-        if ($validatedData['action'] === 'approve') {
-            $purchaseRequest->status = 'approved';
-            $purchaseRequest->approved_at = now();
-            $message = 'Purchase request approved successfully.';
-        } else {
-            $purchaseRequest->status = 'rejected';
-            $purchaseRequest->rejection_reason = $validatedData['rejection_reason'];
-            $message = 'Purchase request rejected successfully.';
-        }
-        
-        $purchaseRequest->save();
-        
-        // TODO: Send notification to the requestor
-        
-        return redirect()
-            ->route('purchase-requests.show', $purchaseRequest)
-            ->with('success', $message);
+
+        // Redirect to the new budget approval workflow
+        return redirect()->route('budget-approvals.create', $purchaseRequest);
     }
 }
